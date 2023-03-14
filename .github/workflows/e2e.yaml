@@ -34,6 +34,6 @@ jobs:
           sleep 10
           kubectl describe pod -l app=athenz-client-sidecar
           echo '--------------------------'
-          kubectl logs -l app=athenz-client-sidecar --all-containers=true
+          kubectl logs -l app=athenz-client-sidecar --all-containers=true --previous=true --prefix=true
           echo '--------------------------'
           kubectl exec deployment/athenz-client-sidecar -c athenz-client-sidecar -- /go/bin/athenz-client-sidecar -version

@@ -107,7 +107,7 @@ data:
       enable: true
       athenzDomain: athenzDomain
       serviceName: serviceName
-      # privateKeyPath: /etc/athenz/client/keys/private.key
+      privateKeyPath: /etc/athenz/client/keys/private.key
       keyVersion: v1
       expiry: 30m
       refreshPeriod: 25m
