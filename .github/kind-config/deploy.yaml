@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - image: nginx:1.15.4
-        name: athenz-client-sidecar
+        name: tenant-application
         ports:
         - containerPort: 80
         resources:
