@@ -31,7 +31,8 @@ jobs:
           # curl -v -sf -X POST http://127.0.0.1:80/roletoken --data '{"domain":"athenz.provider-domain","role":"tenant-role"}'
           # jq -r .token | grep -oE 'h=[^;]+'
 
-          kubectl describe pod -l app=athenz-client-sidecar
           sleep 10
+          kubectl describe pod -l app=athenz-client-sidecar
+          kubectl exec deployment/athenz-client-sidecar -c athenz-client-sidecar -- /go/bin/athenz-client-sidecar -version
+          echo '--------------------------'
           kubectl logs -l app=athenz-client-sidecar --all-containers=true
-          # kubectl exec deployment/athenz-client-sidecar -c athenz-client-sidecar -- /go/bin/athenz-client-sidecar -version
