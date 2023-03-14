@@ -56,6 +56,8 @@ spec:
         image: athenz/athenz-client-sidecar:latest
         imagePullPolicy: Always
         name: athenz-client-sidecar
+        # command: ["/go/bin/athenz-client-sidecar"]
+        args: ["-version"]
         ports:
         - containerPort: 8080
           name: client-sc
