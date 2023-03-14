@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: athenz-client-sidecar
+  name: athenz-client-sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: athenz-client-sidecar
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: athenz-client-sidecar
+    spec:
+      containers:
+      - image: nginx:1.15.4
+        name: tenant-application
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 250m
+            memory: 64Mi
+      - env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: VAR1
+          value: value1
+        - name: VAR2
+          value: value2
+        - name: VAR3
+          value: value3
+        image: athenz/athenz-client-sidecar:latest
+        imagePullPolicy: Always
+        name: athenz-client-sidecar
+        # command: ["/go/bin/athenz-client-sidecar"]
+        args: ["-version"]
+        ports:
+        - containerPort: 8080
+          name: client-sc
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 2
+          httpGet:
+            path: /healthz
+            port: 6080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources: {}
+        volumeMounts:
+        - mountPath: /etc/athenz/client
+          name: athenz-client-config-volume
+        # - mountPath: /etc/athenz/client/keys
+        #   name: athenz-client-secret-volume
+      volumes:
+      - configMap:
+          name: athenz-client-config
+        name: athenz-client-config-volume
+      # - name: athenz-client-secret-volume
+      #   secret:
+      #     secretName: athenz-client-secret
+status: {}
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    version: v2.0.0
+    server:
+      address: ""
+      port: 8080
+      timeout: 10s
+      shutdownTimeout: 10s
+      shutdownDelay: 9s
+      tls:
+        enable: false
+        certPath: ""
+        keyPath: ""
+        caPath: ""
+      healthCheck:
+        address: ""
+        port: 6080
+        endpoint: /healthz
+    nToken:
+      enable: true
+      athenzDomain: athenzDomain
+      serviceName: serviceName
+      privateKeyPath: /etc/athenz/client/keys/private.key
+      keyVersion: v1
+      expiry: 30m
+      refreshPeriod: 25m
+      existingTokenPath: ""
+      validate: false
+    accessToken:
+      enable: false
+      principalAuthHeader: Athenz-Principal-Auth
+      athenzURL: 127.0.0.1:443/zts/v1
+      athenzCAPath: ""
+      certPath: /var/run/athenz/service.cert.pem
+      certKeyPath: /var/run/athenz/service.key.pem
+      expiry: ""
+      refreshPeriod: ""
+      retry:
+        attempts: 0
+        delay: ""
+    roleToken:
+      enable: true
+      principalAuthHeader: Athenz-Principal-Auth
+      athenzURL: 127.0.0.1:443/zts/v1
+      athenzCAPath: ""
+      certPath: /var/run/athenz/service.cert.pem
+      certKeyPath: /var/run/athenz/service.key.pem
+      expiry: ""
+      refreshPeriod: ""
+      retry:
+        attempts: 0
+        delay: ""
+    serviceCert:
+      enable: false
+      principalAuthHeader: ""
+      athenzURL: ""
+      athenzCAPath: ""
+      expiry: ""
+      refreshPeriod: ""
+      expiryMargin: ""
+      dnsSuffix: ""
+      intermediateCert: false
+      spiffe: false
+      subject:
+        country: ""
+        province: ""
+        organization: ""
+        organizationalUnit: ""
+    proxy:
+      enable: true
+      principalAuthHeader: Athenz-Principal-Auth
+      roleAuthHeader: Athenz-Role-Auth
+      bufferSize: 1024
+    log:
+      level: info
+      color: false
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: athenz-client-config
