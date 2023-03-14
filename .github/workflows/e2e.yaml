@@ -20,5 +20,5 @@ jobs:
           echo "environment-kubeconfig:" ${KUBECONFIG}
       - name: Deploy
         run: |
-          kind load docker-image --name=kind litmuschaos/ansible-runner:ci
-          kubectl apply -f https://raw.githubusercontent.com/mayadata-io/chaos-ci-lib/master/app/nginx.yml
+          # kind load docker-image --name=kind litmuschaos/ansible-runner:ci
+          kubectl apply -f "./.github/kind-config/deploy.yaml"
