@@ -22,3 +22,14 @@ jobs:
         run: |
           # kind load docker-image --name=kind litmuschaos/ansible-runner:ci
           kubectl apply -f "./.github/kind-config/deploy.yaml"
+      - name: Rue E2E
+        run: |
+          # wait pod ready
+          kubectl wait pods -l app=athenz-client-sidecar --for condition=Ready --timeout=60s
+          # request to pod
+          kubectl port-forward deployment/athenz-client-sidecar 80:8080 &
+          curl -v -sf -X POST http://127.0.0.1:80/roletoken --data '{"domain":"athenz.provider-domain","role":"tenant-role"}'
+          # jq -r .token | grep -oE 'h=[^;]+'
+
+          kubectl logs -l app=athenz-client-sidecar --all-containers=false
+          kubectl exec deployment/athenz-client-sidecar -c athenz-client-sidecar -- /go/bin/athenz-client-sidecar -version

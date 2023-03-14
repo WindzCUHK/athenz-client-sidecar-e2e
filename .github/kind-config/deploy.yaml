@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: nginx
-  name: nginx-deployment
+    app: athenz-client-sidecar
+  name: athenz-client-sidecar
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: nginx
+      app: athenz-client-sidecar
   strategy:
     type: RollingUpdate
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: nginx
+        app: athenz-client-sidecar
     spec:
       containers:
       - image: nginx:1.15.4
-        name: nginx
+        name: athenz-client-sidecar
         ports:
         - containerPort: 80
         resources:
