@@ -6,7 +6,7 @@ metadata:
     app: athenz-client-sidecar
   name: athenz-client-sidecar
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: athenz-client-sidecar
@@ -73,15 +73,15 @@ spec:
         volumeMounts:
         - mountPath: /etc/athenz/client
           name: athenz-client-config-volume
-        - mountPath: /etc/athenz/client/keys
-          name: athenz-client-secret-volume
+        # - mountPath: /etc/athenz/client/keys
+        #   name: athenz-client-secret-volume
       volumes:
       - configMap:
           name: athenz-client-config
         name: athenz-client-config-volume
-      - name: athenz-client-secret-volume
-        secret:
-          secretName: athenz-client-secret
+      # - name: athenz-client-secret-volume
+      #   secret:
+      #     secretName: athenz-client-secret
 status: {}
 ---
 apiVersion: v1
@@ -107,7 +107,7 @@ data:
       enable: true
       athenzDomain: athenzDomain
       serviceName: serviceName
-      privateKeyPath: /etc/athenz/client/keys/private.key
+      # privateKeyPath: /etc/athenz/client/keys/private.key
       keyVersion: v1
       expiry: 30m
       refreshPeriod: 25m

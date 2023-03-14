@@ -32,5 +32,6 @@ jobs:
           # jq -r .token | grep -oE 'h=[^;]+'
 
           kubectl describe pod -l app=athenz-client-sidecar
-          kubectl logs -l app=athenz-client-sidecar --all-containers=false
+          sleep 10
+          kubectl logs -l app=athenz-client-sidecar --all-containers=true
           # kubectl exec deployment/athenz-client-sidecar -c athenz-client-sidecar -- /go/bin/athenz-client-sidecar -version
